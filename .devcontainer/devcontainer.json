@@ -1,0 +1,57 @@
+{
+  "name": "FHIR IG Builder",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "installMaven": "false",
+      "installGradle": "false"
+    }
+  },
+
+  "postCreateCommand": "corepack enable && pnpm install && pnpm sushi --help > /dev/null 2>&1 || true",
+
+  "forwardPorts": [80],
+
+  "containerEnv": {
+    "JAVA_TOOL_OPTIONS": "-Xmx4g",
+    "COREPACK_ENABLE_STRICT": "0"
+  },
+
+  "remoteUser": "node",
+
+  "mounts": [
+    "source=fhir-ig-builder-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume",
+    "source=fhir-ig-builder-fhir-cache,target=/home/node/.fhir,type=volume"
+  ],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "kmaravilla.vscode-fhir-shorthand",
+        "redhat.vscode-yaml",
+        "editorconfig.editorconfig"
+      ],
+      "settings": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "files.eol": "\n",
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "[fsh]": {
+          "editor.tabSize": 2
+        }
+      }
+    },
+    "zed": {
+      "extensions": []
+    }
+  },
+
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "32gb"
+  }
+}
