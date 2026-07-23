@@ -1,0 +1,6 @@
+{
+  "recommendations": [
+    "kmaravilla.vscode-fhir-shorthand",
+    "redhat.vscode-yaml"
+  ]
+}

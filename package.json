@@ -1,0 +1,30 @@
+{
+  "name": "nmdp-fhir-ig-builder",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NMDP FHIR Implementation Guide template using FHIR Shorthand (FSH) and SUSHI",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nmdp-ig/fhir-ig-builder.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "volta": {
+    "node": "22.21.1",
+    "pnpm": "10.33.0"
+  },
+  "scripts": {
+    "sushi": "sushi .",
+    "build": "sushi . && java -jar input-cache/publisher.jar -ig ig.ini -no-sushi",
+    "watch": "sushi . --watch",
+    "validate": "sushi . && java -jar input-cache/publisher.jar -ig ig.ini -no-sushi -tx n/a",
+    "publisher:update": "bash _updatePublisher.sh -y",
+    "postinstall": "echo '\n📦 pnpm install complete.\n💡 Run pnpm sushi once to download FHIR packages (~30s first time).\n'"
+  },
+  "devDependencies": {
+    "fsh-sushi": "^3.13.0"
+  }
+}

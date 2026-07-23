@@ -1,2 +1,25 @@
-/app-local
-.DS_store
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# FHIR/SUSHI output
+fsh-generated/
+output/
+temp/
+template/
+input-cache/
+.fhir/
+
+# IG Publisher
+Publication-request.json
+
+# IDE (keep settings.json and extensions.json)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Misc
+*.log
