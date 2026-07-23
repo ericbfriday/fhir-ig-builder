@@ -1,0 +1,56 @@
+# SUSHI Validation — lightweight FSH compilation check
+# Runs on PRs and pushes to main. No Java/IG Publisher required.
+
+name: Validate FSH
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: SUSHI compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      - name: Cache FHIR packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.fhir/packages
+          key: fhir-packages-${{ hashFiles('sushi-config.yaml') }}
+          restore-keys: |
+            fhir-packages-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Compile FSH (SUSHI)
+        run: pnpm sushi
