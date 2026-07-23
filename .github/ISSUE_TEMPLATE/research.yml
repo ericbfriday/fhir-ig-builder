@@ -1,0 +1,57 @@
+name: Research Question
+description: Investigate a technical question or design decision
+labels: ["research"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when you need to investigate a question before committing to an implementation approach.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Research Question
+      description: What question needs to be answered?
+      placeholder: How should we handle X given constraint Y?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why does this question matter? What decision is blocked by it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Known Constraints
+      description: Any constraints, prior art, or boundaries that should inform the research.
+      placeholder: |
+        - Must be compatible with FHIR R4
+        - Should work with IG Publisher 1.6+
+        - Prior discussion in #<issue>
+    validations:
+      required: false
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Suggested Sources
+      description: Where to start looking (specs, docs, repos, people).
+      placeholder: |
+        - HL7 FHIR spec: https://hl7.org/fhir/
+        - SUSHI docs: https://fshschool.org/
+    validations:
+      required: false
+
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: Expected Deliverable
+      description: What should the output of this research look like?
+      placeholder: An ADR documenting the decision, a proof-of-concept branch, a summary comment on this issue, etc.
+    validations:
+      required: true
