@@ -1,16 +1,10 @@
 {
   "name": "FHIR IG Builder",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-
-  "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "17",
-      "installMaven": "false",
-      "installGradle": "false"
-    }
+  "build": {
+    "dockerfile": "Dockerfile"
   },
 
-  "postCreateCommand": "corepack enable && pnpm install && pnpm sushi --help > /dev/null 2>&1 || true",
+  "postCreateCommand": "pnpm install && pnpm sushi --help > /dev/null 2>&1 || true",
 
   "forwardPorts": [80],
 

@@ -1,0 +1,27 @@
+# Dependencies (rebuilt in container)
+node_modules/
+
+# SUSHI output (generated at runtime)
+fsh-generated/
+
+# IG Publisher output
+output/
+temp/
+template/
+
+# Git
+.git/
+.gitignore
+
+# IDE / editor
+.vscode/
+.kiro/
+*.swp
+*.swo
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Legacy files
+app-local/
