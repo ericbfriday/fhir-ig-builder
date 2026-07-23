@@ -1,10 +1,10 @@
-id: nmdp.fhir.ig-builder
-canonical: http://fhir.nmdp.org/ig/ig-builder
-name: NMDPFHIRIGBuilder
-title: NMDP FHIR IG Builder Template
+id: example.fhir.my-ig
+canonical: http://example.org/ig/my-ig
+name: MyFHIRIG
+title: My FHIR Implementation Guide
 description: >-
-  A template Implementation Guide for authoring FHIR profiles at NMDP
-  (National Marrow Donor Program / Be The Match) using FHIR Shorthand.
+  A template Implementation Guide for authoring FHIR profiles
+  using FHIR Shorthand. Replace this description with your own.
 status: draft
 version: 0.1.0
 fhirVersion: 4.0.1
@@ -13,9 +13,9 @@ releaseLabel: ci-build
 license: Apache-2.0
 jurisdiction: urn:iso:std:iso:3166#US "United States of America"
 publisher:
-  name: National Marrow Donor Program (NMDP)
-  url: https://www.nmdp.org
-  email: fhir@nmdp.org
+  name: Your Organization
+  url: https://example.org
+  email: fhir@example.org
 
 dependencies:
   hl7.fhir.us.core: 6.1.0

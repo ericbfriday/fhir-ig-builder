@@ -1,8 +1,8 @@
 {
-  "name": "nmdp-fhir-ig-builder",
+  "name": "fhir-ig-template",
   "version": "0.1.0",
   "private": true,
-  "description": "NMDP FHIR Implementation Guide template using FHIR Shorthand (FSH) and SUSHI",
+  "description": "FHIR Implementation Guide template using FHIR Shorthand (FSH) and SUSHI",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
