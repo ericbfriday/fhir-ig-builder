@@ -1,0 +1,124 @@
+# FHIR Implementation Guide — Build & Validate
+# Compiles FSH with SUSHI, then runs the HL7 IG Publisher.
+#
+# Triggers on PRs targeting main and pushes to main.
+
+name: Build IG
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: SUSHI + IG Publisher
+    runs-on: ubuntu-latest
+
+    steps:
+      # ─── Checkout ────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ─── Node.js & pnpm ─────────────────────────────────────────────────
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      # ─── FHIR package cache ─────────────────────────────────────────────
+      - name: Cache FHIR packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.fhir/packages
+          key: fhir-packages-${{ hashFiles('sushi-config.yaml') }}
+          restore-keys: |
+            fhir-packages-
+
+      # ─── Install & compile FSH ──────────────────────────────────────────
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Compile FSH (SUSHI)
+        run: pnpm sushi
+
+      # ─── Java & IG Publisher ─────────────────────────────────────────────
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Extract IG Publisher version from ig.ini
+        id: ig-publisher-version
+        run: |
+          # Use pinned version if uncommented, otherwise default to 'latest'
+          version=$(grep -E '^\s*publisher\s*=' ig.ini | sed 's/.*=\s*//' || echo "latest")
+          if [ -z "$version" ]; then
+            version="latest"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache IG Publisher JAR
+        uses: actions/cache@v4
+        id: ig-publisher-cache
+        with:
+          path: input-cache/publisher.jar
+          key: ig-publisher-${{ steps.ig-publisher-version.outputs.version }}-${{ hashFiles('ig.ini') }}
+          restore-keys: |
+            ig-publisher-
+
+      - name: Download IG Publisher
+        if: steps.ig-publisher-cache.outputs.cache-hit != 'true'
+        run: bash _updatePublisher.sh -y
+
+      - name: Run IG Publisher
+        run: java -jar input-cache/publisher.jar -ig ig.ini -no-sushi
+
+      # ─── Commented-out optional steps ────────────────────────────────────
+      #
+      # Strict validation — fail the build on warnings (not just errors):
+      # - name: Run IG Publisher (strict — fail on warnings)
+      #   run: |
+      #     java -jar input-cache/publisher.jar -ig ig.ini -no-sushi 2>&1 | tee publisher-output.log
+      #     if grep -q "WARN" publisher-output.log; then
+      #       echo "::error::IG Publisher produced warnings. Failing build (strict mode)."
+      #       exit 1
+      #     fi
+      #
+      # Upload the built IG as a workflow artifact:
+      # - name: Upload IG artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: implementation-guide
+      #     path: output/
+      #     retention-days: 14
+      #
+      # Deploy to GitHub Pages (requires Pages enabled in repo settings):
+      # - name: Deploy to GitHub Pages
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     path: output/
+      # - name: Deploy Pages
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   uses: actions/deploy-pages@v4
