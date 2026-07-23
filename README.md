@@ -32,6 +32,96 @@ First run downloads FHIR packages (~30 seconds). Subsequent runs are sub-second.
 
 ---
 
+## Creating Your IG
+
+This repo is a template. After cloning, replace the placeholder values with your own IG identity and domain content.
+
+### 1. Replace IG identity fields
+
+The following files contain placeholder values that must be updated:
+
+| File | Fields to change |
+|------|-----------------|
+| `sushi-config.yaml` | `id`, `canonical`, `name`, `title`, `description`, `publisher` (name/url/email) |
+| `ig.ini` | `ig` (must reference the new `id`) |
+| `package.json` | `name`, `description`, `repository.url` |
+| `README.md` | Title, description, and clone URL in Quick Start |
+
+**Copy-pasteable sed commands** (replace `my-org` and `my-ig` with your values):
+
+```bash
+# Choose your values
+ORG="my-org"                          # e.g. "nmdp" or "example-health"
+IG="my-ig"                            # e.g. "donor-ig" or "lab-results"
+CANONICAL="http://${ORG}.org/ig/${IG}" # your IG canonical URL
+TITLE="My New IG Title"
+NAME="MyNewIGName"                    # PascalCase, no spaces
+
+# sushi-config.yaml
+sed -i '' "s|id: example.fhir.my-ig|id: ${ORG}.fhir.${IG}|" sushi-config.yaml
+sed -i '' "s|canonical: http://example.org/ig/my-ig|canonical: ${CANONICAL}|" sushi-config.yaml
+sed -i '' "s|name: MyFHIRIG|name: ${NAME}|" sushi-config.yaml
+sed -i '' "s|title: My FHIR Implementation Guide|title: ${TITLE}|" sushi-config.yaml
+sed -i '' "s|name: Your Organization|name: ${ORG}|" sushi-config.yaml
+sed -i '' "s|url: https://example.org|url: https://${ORG}.org|" sushi-config.yaml
+sed -i '' "s|email: fhir@example.org|email: fhir@${ORG}.org|" sushi-config.yaml
+
+# ig.ini (must match the id in sushi-config.yaml)
+sed -i '' "s|ImplementationGuide-example.fhir.my-ig.json|ImplementationGuide-${ORG}.fhir.${IG}.json|" ig.ini
+
+# package.json
+sed -i '' "s|\"name\": \"fhir-ig-template\"|\"name\": \"${IG}\"|" package.json
+```
+
+### 2. Replace example profiles with domain-specific ones
+
+The template ships with example profiles in `input/fsh/profiles/` and matching instances in `input/fsh/examples/`:
+
+- [ ] Delete or replace `profiles/ExampleDonorOrder.fsh`
+- [ ] Delete or replace `profiles/ExampleLabObservation.fsh`
+- [ ] Delete or replace `profiles/NMDPDonorPatient.fsh`
+- [ ] Delete or replace `examples/ExampleOrderInstance.fsh`
+- [ ] Delete or replace `examples/ExampleBloodTypeObservation.fsh`
+- [ ] Delete or replace `examples/ExampleNMDPDonor.fsh`
+
+Create your own profiles following the FSH pattern:
+
+```fsh
+Profile: MyDomainResource
+Parent: Observation          // or Patient, ServiceRequest, etc.
+Id: my-domain-resource
+Title: "My Domain Resource"
+Description: "A profile for ..."
+```
+
+### 3. Update `input/fsh/aliases.fsh`
+
+The template includes NMDP-specific aliases. Replace them with the code systems and identifiers relevant to your domain:
+
+- [ ] Remove aliases you don't need (NMDP, CIBMTR identifiers)
+- [ ] Keep common aliases (`$loinc`, `$sct`) if you use them
+- [ ] Add your organization's terminology system URLs
+
+### 4. Verify the build compiles clean
+
+```bash
+pnpm install && pnpm sushi
+```
+
+A successful run prints `0 errors` and generates resources in `fsh-generated/`. Fix any errors before committing.
+
+### Quick checklist
+
+- [ ] `sushi-config.yaml` — id, canonical, name, title, description, publisher
+- [ ] `ig.ini` — ig path references new id
+- [ ] `package.json` — name, description, repository
+- [ ] `README.md` — title and Quick Start clone URL
+- [ ] Example profiles replaced or removed
+- [ ] `aliases.fsh` updated for your domain
+- [ ] `pnpm install && pnpm sushi` compiles with 0 errors
+
+---
+
 ## Project Structure
 
 ```
